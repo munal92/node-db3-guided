@@ -7,8 +7,8 @@ module.exports = {
     findById,
     findPosts,
     add,
-    // update,
-    // remove
+    update,
+    remove
 }
 
 function find() {
@@ -60,3 +60,35 @@ async function add(user) {
     const [id] = await db('users').insert(user);
     return findById(id);
 }
+
+
+// the update method needs to be "async" for the same reason
+// as "add" above... we want to call update(), but we don't
+// want to return the data that update() returns... instead,
+// we want to use update()'s return value in a call to findById(),
+// so we can return the updated user object (not the id of the 
+// record that was updated.) To do this, we can't "return" update(),
+// ... if we call update() without returning it, and without "await", 
+// it will return a promise object (not a record id, like it normally does).
+// And to be able to use "await", the enclosing function must be declared
+// as "asynchronous" - this ensures that the JavaScript engine will
+// wrap return values in a Promise object if needed, so it always
+// returns a promise.
+async function update(changes, id) {
+    await db('users')
+      .where({ id })
+      .update(changes);
+  
+    // returns new user
+    return findById(id);
+  }
+  
+  // note the "del" alias ... "delete" is a reserved word in JavaScript.
+  // so any "delete" methods are named "del" in knex.
+  function remove(id) {
+    // returns removed count
+    return db('users')
+      .where({ id })
+      .del();
+  }
+  

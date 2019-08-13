@@ -71,10 +71,13 @@ router.put('/:id', async (req, res) => {
   const changes = req.body;
 
   try {
-    const count = await db('users').where({ id }).update(changes);
+    // update here
+    const user = await Users.update(changes, id);
 
-    if (count) {
-      res.json({ update: count });
+    // and here
+    if (user) {
+      //and here
+      res.json({ user });
     } else {
       res.status(404).json({ message: 'Could not find user with given id' });
     }
@@ -83,22 +86,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+
 // NOT refactored!!!
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const count = await db('users').where({ id }).del();
-
-    if (count) {
-      res.json({ removed: count });
-    } else {
-      res.status(404).json({ message: 'Could not find user with given id' });
-    }
+    // update here
+    const count = await Users.remove(id);
+    res.json({message: `${count} records deleted`});
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete user' });
   }
 });
+
 
 
 
